@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="icon" href="https://www.dawasa.go.tz/site/images/emblem.png" type="image/png">
+<link rel="icon" href="assets/images/dawasa-logo.png" type="image/png">
 <title>DAWASA Monitoring Dashboard</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -7144,7 +7144,7 @@
   <div class="loading-accent-top"></div>
   <div class="loading-container">
     <div class="loading-logo">
-      <img src="https://www.dawasa.go.tz/site/images/logo.png" alt="DAWASA Logo">
+      <img src="assets/images/dawasa-logo.png" alt="DAWASA Logo">
     </div>
     <h1 class="loading-title">DAWASA</h1>
     <p class="loading-subtitle">Monitoring Dashboard</p>
@@ -7194,7 +7194,7 @@
       <div class="auth-brand-rings">
         <span></span><span></span><span></span>
       </div>
-      <img src="https://www.dawasa.go.tz/site/images/logo.png" alt="DAWASA Logo" class="auth-brand-logo">
+      <img src="assets/images/dawasa-logo.png" alt="DAWASA Logo" class="auth-brand-logo">
       <h2 class="auth-brand-name">DAWASA Monitoring<br>Dashboard</h2>
       <p class="auth-brand-tagline">Real-time monitoring  of water infrastructure across all DAWASA sites.</p>
       <div class="auth-brand-badge">
@@ -7206,7 +7206,7 @@
     <!-- ── Right form panel ── -->
     <div class="auth-form-panel">
   <div class="login-card">
-    <img src="https://www.dawasa.go.tz/site/images/logo.png" alt="DAWASA Logo" class="login-logo">
+    <img src="assets/images/dawasa-logo.png" alt="DAWASA Logo" class="login-logo">
     <h1 class="login-title">DAWASA Monitoring Dashboard</h1>
     <p class="login-subtitle">Please Log in to access the monitoring system</p>
     
@@ -7361,7 +7361,7 @@
 <!-- Sidebar -->
 <div class="navigation" id="navigation">
   <div class="sidebar-header">
-    <span class="icon"><img src="https://www.dawasa.go.tz/site/images/logo.png" alt=""></span><span class="title">DAWASA Monitoring <br>Dashboard</span>
+    <span class="icon"><img src="assets/images/dawasa-logo.png" alt=""></span><span class="title">DAWASA Monitoring <br>Dashboard</span>
   </div>
   <div class="sidebar-mobile-tools" id="sidebarMobileTools"></div>
   <div class="nav-container">
@@ -7478,7 +7478,10 @@
   <div class="topbar">
     <div class="navbar-left">
       <div class="toggle" id="toggle"><ion-icon name="menu-outline"></ion-icon></div>
-      <div class="page-title" id="pageTitle">DAWASA Flowmeters</div>
+      <div class="logo" id="logo">
+        <img src="assets/images/dawasa-logo.png" alt="DAWASA Logo">
+      </div>
+      <div class="page-title" id="pageTitle">Overview</div>
     </div>
 
     <div class="navbar-center" id="navbarCenterHost">
@@ -10575,7 +10578,9 @@ function updatePressure(pKey, value, dateStr, timeStr) {
 }
 
 /* ---------------------- MQTT Integration ---------------------- */
-const broker = "ws://broker.emqx.io:8083/mqtt";
+const broker = window.location.protocol === 'https:'
+  ? 'wss://broker.emqx.io:8084/mqtt'
+  : 'ws://broker.emqx.io:8083/mqtt';
 let client = null;
 let reconnectAttempts = 0;
 const maxReconnectAttempts = 10;
@@ -12087,7 +12092,7 @@ function openAddDeviceModal() {
   document.getElementById('addDeviceForm').reset();
   const importInput = document.getElementById('dmImportDevicesFile');
   if (importInput) importInput.value = '';
-  document.getElementById('dm-broker').value = 'ws://broker.emqx.io:8083/mqtt';
+  document.getElementById('dm-broker').value = broker;
   document.getElementById('dm-customSiteGroup').style.display = 'none';
   document.querySelectorAll('#addDeviceForm .dm-val-msg').forEach(m => m.style.display = 'none');
   document.querySelectorAll('#addDeviceForm input, #addDeviceForm select').forEach(i => i.classList.remove('dm-invalid'));
