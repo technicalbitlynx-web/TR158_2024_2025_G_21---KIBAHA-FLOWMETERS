@@ -1332,7 +1332,17 @@
   
   .navigation.sidebar-collapsed .sidebar-header {
     justify-content: center;
-    padding: 1rem;
+    padding: 0.5rem 1rem 0.75rem;
+    border-bottom-color: transparent;
+  }
+
+  .navigation.sidebar-collapsed .sidebar-brand {
+    padding: 0.75rem 0.5rem 0.3rem;
+  }
+
+  .navigation.sidebar-collapsed .sidebar-brand img {
+    width: 40px;
+    height: 40px;
   }
   
   .navigation ul { 
@@ -1446,6 +1456,32 @@
   .sidebar-header .title {
     white-space: nowrap;
     transition: 0.3s;
+  }
+
+  .sidebar-brand {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem 1rem 0.6rem;
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: color-mix(in srgb, var(--card-bg) 94%, transparent);
+  }
+
+  .sidebar-brand img {
+    width: 68px;
+    height: 68px;
+    object-fit: contain;
+    border-radius: 50%;
+    transition: var(--transition);
+  }
+
+  .sidebar-header {
+    justify-content: center;
+    padding-top: 0.6rem;
+    padding-bottom: 1rem;
+    border-top: none;
   }
 
   .nav-container {
@@ -2956,10 +2992,11 @@
     }
   }
 
-  .sidebar-header img{
-    width: 40px;
-    height: 40px;
-    object-fit: cover;
+  .sidebar-brand img{
+    width: 68px;
+    height: 68px;
+    object-fit: contain;
+    border-radius: 50%;
   }
 
   .loading-page {
@@ -7360,15 +7397,18 @@
 
 <!-- Sidebar -->
 <div class="navigation" id="navigation">
+  <div class="sidebar-brand">
+    <img src="assets/images/dawasa-logo.png" alt="DAWASA Logo">
+  </div>
   <div class="sidebar-header">
-    <span class="icon"><img src="assets/images/dawasa-logo.png" alt=""></span><span class="title">DAWASA Monitoring <br>Dashboard</span>
+    <span class="title">DAWASA Monitoring <br>Dashboard</span>
   </div>
   <div class="sidebar-mobile-tools" id="sidebarMobileTools"></div>
   <div class="nav-container">
     <div class="nav-section-title">Main</div>
     <a href="#" class="nav-item active" onclick="showView('dashboard')" data-view="dashboard">
       <ion-icon name="speedometer-outline"></ion-icon>
-      <span>Flowmeter Dashboard</span>
+      <span>Overview</span>
     </a>
     <!-- WTP Section -->
     <div class="flowmeters-only wtp-section">
@@ -7478,9 +7518,6 @@
   <div class="topbar">
     <div class="navbar-left">
       <div class="toggle" id="toggle"><ion-icon name="menu-outline"></ion-icon></div>
-      <div class="logo" id="logo">
-        <img src="assets/images/dawasa-logo.png" alt="DAWASA Logo">
-      </div>
       <div class="page-title" id="pageTitle">Overview</div>
     </div>
 
@@ -9254,7 +9291,7 @@ function showView(viewId) {
   
   if (viewId === "dashboard") {
     document.getElementById("dashboardView").classList.add("active");
-    pageTitle.textContent = "DAWASA Flowmeters";
+    pageTitle.textContent = "Overview";
     document.querySelector('.navigation .nav-item[data-view="dashboard"]').classList.add("active");
   } else if (viewId === "pressureDashboard") {
     document.getElementById("pressureDashboardView").classList.add("active");
