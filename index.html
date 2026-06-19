@@ -10624,7 +10624,13 @@ const maxReconnectAttempts = 10;
 let mqttConnecting = false;
 
 function normalizeBrokerUrl(url) {
-  return String(url || '').trim().replace(/\/$/, '').toLowerCase();
+  try {
+    // Normalise mqtt(s):// → ws(s):// so the URL constructor can parse it
+    const s = String(url || '').trim().replace(/^mqtts:\/\//i, 'wss://').replace(/^mqtt:\/\//i, 'ws://');
+    return new URL(s).hostname.toLowerCase();
+  } catch (_) {
+    return String(url || '').trim().replace(/\/$/, '').toLowerCase();
+  }
 }
 
 function disconnectMqtt() {
@@ -11509,7 +11515,7 @@ function dmImportDevicesFromFile(file) {
           name,
           site,
           pipeSize,
-          broker: brokerInput,
+          broker: broker,
           topic,
           qos,
           type,
