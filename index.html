@@ -9963,10 +9963,14 @@ function populateHistoricalSiteFilter(data, selectedSite) {
     data.map(row => (row.site || '').trim()).filter(Boolean)
   )].sort((a, b) => a.localeCompare(b));
 
-  siteSelect.innerHTML = ['<option value="">All Sites</option>']
-    .concat(sites.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`))
-    .join('');
-  siteSelect.value = sites.includes(selectedSite) ? selectedSite : '';
+  siteSelect.innerHTML = '';
+  [{ v: '', t: 'All Sites' }, ...sites.map(s => ({ v: s, t: s }))].forEach(({ v, t }) => {
+    const opt = document.createElement('option');
+    opt.value = v;
+    opt.textContent = t;
+    if (v === selectedSite) opt.selected = true;
+    siteSelect.appendChild(opt);
+  });
 }
 
 function populateHistoricalDeviceFilter(data, selectedDevice) {
@@ -9977,10 +9981,14 @@ function populateHistoricalDeviceFilter(data, selectedDevice) {
     data.map(row => (row.name || '').trim()).filter(Boolean)
   )].sort((a, b) => a.localeCompare(b));
 
-  deviceSelect.innerHTML = ['<option value="">All Devices</option>']
-    .concat(devices.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`))
-    .join('');
-  deviceSelect.value = devices.includes(selectedDevice) ? selectedDevice : '';
+  deviceSelect.innerHTML = '';
+  [{ v: '', t: 'All Devices' }, ...devices.map(d => ({ v: d, t: d }))].forEach(({ v, t }) => {
+    const opt = document.createElement('option');
+    opt.value = v;
+    opt.textContent = t;
+    if (v === selectedDevice) opt.selected = true;
+    deviceSelect.appendChild(opt);
+  });
 }
 
 // Settings Management
@@ -12104,8 +12112,10 @@ showView = function(viewId) {
     // Update page title
     const pt = document.getElementById('pageTitle');
     if (pt) pt.textContent = customDev.site + ' – ' + customDev.name;
-    // Initialize chart on first open
+    // Initialize chart and backfill any buffered data
     dmInitChart(viewId);
+    if (customDev.type === 'flowmeter') syncSingleChart(viewId);
+    else syncPressureChart(viewId);
     // Close mobile sidebar
     if (typeof isMobile === 'function' && isMobile()) closeSidebar();
     if (typeof clearSearch === 'function') clearSearch();
