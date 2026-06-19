@@ -8848,6 +8848,31 @@ function authenticateUser(identifier, password) {
   return { success: false, message: 'Invalid credentials' };
 }
 
+// Seed a default admin account on first load if no users are registered yet.
+(function seedDefaultAdmin() {
+  try {
+    const users = JSON.parse(localStorage.getItem('dawasa_users') || '{}');
+    if (Object.keys(users).length === 0) {
+      users['admin@dawasa.go.tz'] = {
+        username: 'admin',
+        password: 'admin',
+        email: 'admin@dawasa.go.tz',
+        fullName: 'System Administrator',
+        role: 'Manager',
+        department: 'Administration',
+        station: 'HQ',
+        phone: '',
+        extension: '',
+        lastLogin: null,
+        registrationDate: new Date().toLocaleDateString(),
+        createdAt: new Date().toISOString(),
+        preferences: { theme: 'light', notifications: true }
+      };
+      localStorage.setItem('dawasa_users', JSON.stringify(users));
+    }
+  } catch (_) {}
+})();
+
 /* ---------------------- Form Validation ---------------------- */
 function validateEmail(email) {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
