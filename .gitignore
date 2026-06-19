@@ -6,3 +6,7 @@ __pycache__/
 # OS artefacts
 .DS_Store
 Thumbs.db
+
+# Local-only documents (not published to GitHub Pages)
+PROJECT_DOCUMENT.md
+sample.csv
