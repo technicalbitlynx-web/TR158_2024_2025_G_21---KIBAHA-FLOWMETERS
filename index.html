@@ -7625,24 +7625,34 @@
           </div>
         </div>
       </div>
-      <div style="margin: 20px 0; display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+      <div style="margin: 20px 0; display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
         <div>
-          <label for="historyDataType">Data Type:</label>
-          <select id="historyDataType" style="padding: 8px; border: 1px solid var(--border); border-radius: 6px;">
-            <option value="">-- All --</option>
+          <label for="historyDataType" style="display:block;font-size:0.78rem;margin-bottom:3px;color:var(--text-muted);">Data Type</label>
+          <select id="historyDataType" style="padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text);">
+            <option value="">All Types</option>
             <option value="flowmeter">Flowmeter</option>
             <option value="pressure">Pressure</option>
           </select>
         </div>
         <div>
-          <label for="historySite">Site:</label>
-          <select id="historySite" style="padding: 8px; border: 1px solid var(--border); border-radius: 6px;">
-            <option value="">-- All Sites --</option>
-            <option value="WTP">WTP</option>
-            <option value="TM (Transmission Mains)">TM (Transmission Mains)</option>
-            <option value="Booster Pumping Station">Booster Pumping Station</option>
-            <option value="Waste Stabilization Pond">Waste Stabilization Pond</option>
+          <label for="historySite" style="display:block;font-size:0.78rem;margin-bottom:3px;color:var(--text-muted);">Site</label>
+          <select id="historySite" style="padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text);">
+            <option value="">All Sites</option>
           </select>
+        </div>
+        <div>
+          <label for="historyDeviceFilter" style="display:block;font-size:0.78rem;margin-bottom:3px;color:var(--text-muted);">Device</label>
+          <select id="historyDeviceFilter" style="padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text);">
+            <option value="">All Devices</option>
+          </select>
+        </div>
+        <div>
+          <label for="historyDateFrom" style="display:block;font-size:0.78rem;margin-bottom:3px;color:var(--text-muted);">From</label>
+          <input type="date" id="historyDateFrom" style="padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text);">
+        </div>
+        <div>
+          <label for="historyDateTo" style="display:block;font-size:0.78rem;margin-bottom:3px;color:var(--text-muted);">To</label>
+          <input type="date" id="historyDateTo" style="padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text);">
         </div>
         <button id="clearHistoryFilterBtn" class="btn-secondary" style="padding: 8px 15px; border: 1px solid var(--border); border-radius: 6px; background: transparent; cursor: pointer;">Reset Filters</button>
       </div>
@@ -8009,13 +8019,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Export function
 function exportHistoricalData(format) {
-  const dataType = document.getElementById('historyDataType').value;
-  const site = document.getElementById('historySite').value;
-  let data = historicalDataManager.getData();  // from your existing code
-  
-  // Apply filters (same as in loadHistoricalDataView)
-  if (dataType) data = data.filter(d => d.type.toLowerCase() === dataType);
-  if (site) data = data.filter(d => d.site === site);
+  const dataType    = document.getElementById('historyDataType')?.value    || '';
+  const site        = document.getElementById('historySite')?.value         || '';
+  const deviceName  = document.getElementById('historyDeviceFilter')?.value || '';
+  const dateFrom    = document.getElementById('historyDateFrom')?.value     || '';
+  const dateTo      = document.getElementById('historyDateTo')?.value       || '';
+  let data = historicalDataManager.getData();
+
+  if (dataType)   data = data.filter(d => d.type.toLowerCase() === dataType);
+  if (site)       data = data.filter(d => d.site === site);
+  if (deviceName) data = data.filter(d => d.name === deviceName);
+  if (dateFrom)   data = data.filter(d => d.date >= dateFrom);
+  if (dateTo)     data = data.filter(d => d.date <= dateTo);
   
   if (data.length === 0) {
     showToast('No data to export', 'warning');
@@ -9715,6 +9730,7 @@ const historicalDataManager = {
             type: 'Flowmeter',
             site: dev.site || 'Custom Site',
             location: pipeDisplay,
+            name: dev.name || pipeDisplay,
             date: parsed.today,
             time: time,
             value: parsed.values[idx] + ' m³/h',
@@ -9734,6 +9750,7 @@ const historicalDataManager = {
             type: 'Pressure',
             site: dev.site || 'Custom Site',
             location: pipeDisplay,
+            name: dev.name || pipeDisplay,
             date: parsed.today,
             time: time,
             value: parsed.values[idx] + ' bar',
@@ -9866,23 +9883,26 @@ const historicalDataManager = {
 
 // Load historical data view
 function loadHistoricalDataView() {
-  const dataTypeFilter = document.getElementById('historyDataType')?.value || '';
-  const siteFilter = document.getElementById('historySite')?.value || '';
-  const tableBody = document.getElementById('historicalDataTableBody');
+  const dataTypeFilter  = document.getElementById('historyDataType')?.value   || '';
+  const siteFilter      = document.getElementById('historySite')?.value        || '';
+  const deviceFilter    = document.getElementById('historyDeviceFilter')?.value || '';
+  const dateFrom        = document.getElementById('historyDateFrom')?.value    || '';
+  const dateTo          = document.getElementById('historyDateTo')?.value      || '';
+  const tableBody  = document.getElementById('historicalDataTableBody');
   const emptyState = document.getElementById('emptyHistoricalData');
-  const allData = historicalDataManager.getData();
-  
+  const allData    = historicalDataManager.getData();
+
   populateHistoricalSiteFilter(allData, siteFilter);
-  
+  populateHistoricalDeviceFilter(allData, deviceFilter);
+
   let data = [...allData];
-  
-  if (dataTypeFilter) {
-    data = data.filter(d => d.type === dataTypeFilter);
-  }
-  if (siteFilter) {
-    data = data.filter(d => d.site === siteFilter);
-  }
-  
+
+  if (dataTypeFilter) data = data.filter(d => d.type.toLowerCase() === dataTypeFilter);
+  if (siteFilter)     data = data.filter(d => d.site === siteFilter);
+  if (deviceFilter)   data = data.filter(d => d.name === deviceFilter);
+  if (dateFrom)       data = data.filter(d => d.date >= dateFrom);
+  if (dateTo)         data = data.filter(d => d.date <= dateTo);
+
   if (data.length === 0) {
     tableBody.innerHTML = '';
     emptyState.style.display = 'block';
@@ -9899,31 +9919,33 @@ function loadHistoricalDataView() {
       </tr>
     `).join('');
   }
-  
-  // Setup filters
-  const dataTypeSelect = document.getElementById('historyDataType');
-  if (dataTypeSelect) {
-    dataTypeSelect.onchange = loadHistoricalDataView;
-  }
-  
-  const siteSelect = document.getElementById('historySite');
-  if (siteSelect) {
-    siteSelect.onchange = loadHistoricalDataView;
-  }
-  
+
+  // Wire up all filter controls (idempotent — safe to call repeatedly)
+  ['historyDataType', 'historySite', 'historyDeviceFilter', 'historyDateFrom', 'historyDateTo']
+    .forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.onchange = loadHistoricalDataView;
+    });
+
   const resetBtn = document.getElementById('clearHistoryFilterBtn');
   if (resetBtn) {
     resetBtn.onclick = () => {
-      if (dataTypeSelect) dataTypeSelect.value = '';
-      if (siteSelect) siteSelect.value = '';
+      ['historyDataType', 'historySite', 'historyDeviceFilter'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      ['historyDateFrom', 'historyDateTo'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
       loadHistoricalDataView();
     };
   }
-  
+
   const clearAllBtn = document.getElementById('clearAllDataBtn');
   if (clearAllBtn) {
     clearAllBtn.onclick = () => {
-      showConfirmDialog('Clear All Data', 'Are you sure you want to delete ALL historical data? This action cannot be undone.', 
+      showConfirmDialog('Clear All Data', 'Are you sure you want to delete ALL historical data? This action cannot be undone.',
         () => historicalDataManager.clearAll());
     };
   }
@@ -9934,16 +9956,27 @@ function populateHistoricalSiteFilter(data, selectedSite) {
   if (!siteSelect) return;
 
   const sites = [...new Set(
-    data
-      .map(row => (row.site || '').trim())
-      .filter(Boolean)
-  )].sort((left, right) => left.localeCompare(right));
+    data.map(row => (row.site || '').trim()).filter(Boolean)
+  )].sort((a, b) => a.localeCompare(b));
 
-  const options = ['<option value="">-- All Sites --</option>']
-    .concat(sites.map(site => `<option value="${escapeHtml(site)}">${escapeHtml(site)}</option>`));
-
-  siteSelect.innerHTML = options.join('');
+  siteSelect.innerHTML = ['<option value="">All Sites</option>']
+    .concat(sites.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`))
+    .join('');
   siteSelect.value = sites.includes(selectedSite) ? selectedSite : '';
+}
+
+function populateHistoricalDeviceFilter(data, selectedDevice) {
+  const deviceSelect = document.getElementById('historyDeviceFilter');
+  if (!deviceSelect) return;
+
+  const devices = [...new Set(
+    data.map(row => (row.name || '').trim()).filter(Boolean)
+  )].sort((a, b) => a.localeCompare(b));
+
+  deviceSelect.innerHTML = ['<option value="">All Devices</option>']
+    .concat(devices.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`))
+    .join('');
+  deviceSelect.value = devices.includes(selectedDevice) ? selectedDevice : '';
 }
 
 // Settings Management
