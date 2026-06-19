@@ -9119,10 +9119,12 @@ if (localStorage.getItem('isLoggedIn') === 'true' && localStorage.getItem('curre
   updateUsernameDisplay(currentUser);
   setTimeout(() => { logoutBtn.classList.add('visible'); }, 300);
   connectMqtt();
-  // Initialise device management on boot
-  if (typeof dmBindModalEvents === 'function') dmBindModalEvents();
-  if (typeof dmInit === 'function') dmInit();
-  if (typeof dmUpdateManagerUI === 'function') setTimeout(dmUpdateManagerUI, 100);
+  // Seed devices from devices.json for first-time visitors, then init
+  dmSeedFromJson().then(function() {
+    if (typeof dmBindModalEvents === 'function') dmBindModalEvents();
+    if (typeof dmInit === 'function') dmInit();
+    if (typeof dmUpdateManagerUI === 'function') setTimeout(dmUpdateManagerUI, 100);
+  });
 } else {
   // Hide username display when not logged in
   usernameDisplay.style.display = 'none';
@@ -9160,10 +9162,12 @@ loginForm.addEventListener('submit', function(e) {
       setTimeout(() => { logoutBtn.classList.add('visible'); }, 300);
       showToast(`Welcome back, ${result.user.username}!`, 'success');
       connectMqtt();
-      // Initialise device management after login
-      if (typeof dmBindModalEvents === 'function') dmBindModalEvents();
-      if (typeof dmInit === 'function') dmInit();
-      if (typeof dmUpdateManagerUI === 'function') setTimeout(dmUpdateManagerUI, 100);
+      // Seed devices from devices.json for first-time visitors, then init
+      dmSeedFromJson().then(function() {
+        if (typeof dmBindModalEvents === 'function') dmBindModalEvents();
+        if (typeof dmInit === 'function') dmInit();
+        if (typeof dmUpdateManagerUI === 'function') setTimeout(dmUpdateManagerUI, 100);
+      });
     } else {
       showToast(result.message || 'Login failed', 'error');
     }
@@ -11294,6 +11298,22 @@ function dmGetDevices() {
 
 function dmSaveDevices(d) {
   localStorage.setItem(DM_STORAGE_KEY, JSON.stringify(d));
+}
+
+// Fetch devices.json once and seed localStorage for first-time visitors.
+// Skips silently if data already exists or the file is unavailable.
+function dmSeedFromJson() {
+  return fetch('./devices.json')
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(seed) {
+      if (!seed) return;
+      const existing = dmGetDevices();
+      if (existing.flowmeters.length || existing.pressure.length) return;
+      const fm = Array.isArray(seed.flowmeters) ? seed.flowmeters : [];
+      const pr = Array.isArray(seed.pressure)   ? seed.pressure   : [];
+      if (fm.length || pr.length) dmSaveDevices({ flowmeters: fm, pressure: pr });
+    })
+    .catch(function() {});
 }
 
 function dmCsvEscape(v) {

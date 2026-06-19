@@ -1,0 +1,65 @@
+{
+  "flowmeters": [
+    {
+      "id": "cfm_seed_rpc48",
+      "name": "Kibaha RPC 48",
+      "site": "TM (Transmission Mains)",
+      "pipeSize": 48,
+      "broker": "wss://broker.emqx.io:8084/mqtt",
+      "topic": "rpc/flow/48inch",
+      "qos": 0,
+      "type": "flowmeter",
+      "createdAt": "2026-06-19T00:00:00.000Z",
+      "createdBy": "System"
+    },
+    {
+      "id": "cfm_seed_rpc36",
+      "name": "Kibaha RPC 36",
+      "site": "TM (Transmission Mains)",
+      "pipeSize": 36,
+      "broker": "wss://broker.emqx.io:8084/mqtt",
+      "topic": "rpc/flow/36inch",
+      "qos": 0,
+      "type": "flowmeter",
+      "createdAt": "2026-06-19T00:00:00.000Z",
+      "createdBy": "System"
+    },
+    {
+      "id": "cfm_seed_mpkn24",
+      "name": "Kibaha Mpakani 24\"",
+      "site": "TM (Transmission Mains)",
+      "pipeSize": 24,
+      "broker": "wss://broker.emqx.io:8084/mqtt",
+      "topic": "mpkn/flow/24inch",
+      "qos": 0,
+      "type": "flowmeter",
+      "createdAt": "2026-06-19T00:00:00.000Z",
+      "createdBy": "System"
+    },
+    {
+      "id": "cfm_seed_mpkn30",
+      "name": "Kibaha Mpakani 30\"",
+      "site": "TM (Transmission Mains)",
+      "pipeSize": 30,
+      "broker": "wss://broker.emqx.io:8084/mqtt",
+      "topic": "mpkn/flow/30inch",
+      "qos": 0,
+      "type": "flowmeter",
+      "createdAt": "2026-06-19T00:00:00.000Z",
+      "createdBy": "System"
+    },
+    {
+      "id": "cfm_seed_mlndz16",
+      "name": "Mlandizi 16\"",
+      "site": "TM (Transmission Mains)",
+      "pipeSize": 16,
+      "broker": "wss://broker.emqx.io:8084/mqtt",
+      "topic": "mlndz/flow/16inch",
+      "qos": 0,
+      "type": "flowmeter",
+      "createdAt": "2026-06-19T00:00:00.000Z",
+      "createdBy": "System"
+    }
+  ],
+  "pressure": []
+}
