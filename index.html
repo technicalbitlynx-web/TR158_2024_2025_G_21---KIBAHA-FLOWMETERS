@@ -7661,6 +7661,7 @@
           <thead style="background: var(--thead-bg);">
             <tr>
               <th style="padding: 12px; text-align: left; border-bottom: 1px solid var(--border);">Type</th>
+              <th style="padding: 12px; text-align: left; border-bottom: 1px solid var(--border);">Device</th>
               <th style="padding: 12px; text-align: left; border-bottom: 1px solid var(--border);">Site</th>
               <th style="padding: 12px; text-align: left; border-bottom: 1px solid var(--border);"><span class="history-location-desktop">Pipe/Location</span><span class="history-location-mobile">Size</span></th>
               <th style="padding: 12px; text-align: left; border-bottom: 1px solid var(--border);">Date</th>
@@ -8046,13 +8047,14 @@ function exportHistoricalData(format) {
 
 function exportToCsv(data) {
   // Define CSV headers (exactly as table columns)
-  const headers = ['Type', 'Site', 'Pipe/Location', 'Date', 'Time', 'Value'];
+  const headers = ['Type', 'Device', 'Site', 'Pipe/Location', 'Date', 'Time', 'Value'];
   const csvRows = [];
   csvRows.push(headers.join(','));
-  
+
   for (const row of data) {
     const values = [
       `"${row.type}"`,
+      `"${row.name  || ''}"`,
       `"${row.site}"`,
       `"${row.location}"`,
       `"${row.date}"`,
@@ -8089,9 +8091,10 @@ function exportToPdf(data) {
   doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 22);
   
   // Prepare table data
-  const tableColumn = ['Type', 'Site', 'Pipe/Location', 'Date', 'Time', 'Value'];
+  const tableColumn = ['Type', 'Device', 'Site', 'Pipe/Location', 'Date', 'Time', 'Value'];
   const tableRows = data.map(row => [
     row.type,
+    row.name || '',
     row.site,
     row.location,
     row.date,
@@ -9911,6 +9914,7 @@ function loadHistoricalDataView() {
     tableBody.innerHTML = data.map(row => `
       <tr>
         <td>${escapeHtml(row.type)}</td>
+        <td>${escapeHtml(row.name || '')}</td>
         <td>${escapeHtml(row.site)}</td>
         <td>${escapeHtml(row.location)}</td>
         <td>${escapeHtml(row.date)}</td>
